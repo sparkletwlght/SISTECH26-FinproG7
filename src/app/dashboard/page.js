@@ -1,40 +1,61 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import BottomNav from '../BottomNav';
+import MobileContainer from "@/components/MobileContainer";
+import HeaderNav from "@/components/HeaderNav";
+import Button from "@/components/Button";
+import { ArrowRight, Home, MapPin, PhoneCall, FileText } from "lucide-react";
 
 export default function DashboardPage() {
-  const menu = [
-    { name: 'Map', desc: 'Find nearby safe zones', path: '/map', icon: '📍' },
-    { name: 'Contacts', desc: 'Your close contacts & hotlines', path: '/contacts', icon: '👥' },
-    { name: 'Reports', desc: 'Active alerts near you', path: '/reports', icon: '⚠️' },
-  ];
-
   return (
-    <div className="flex flex-col min-h-screen font-sans text-black">
-      <header className="p-4 border-b w-full">
-        <h1 className="text-xl font-bold">ByHerSide</h1>
-      </header>
-
-      <main className="flex-1 w-full p-4 space-y-3">
-        {menu.map((item) => (
-          <Link
-            key={item.path}
-            href={item.path}
-            className="flex items-center gap-3 p-4 border rounded-2xl hover:bg-gray-50 transition-all"
-          >
-            <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center text-xl">
-              {item.icon}
-            </div>
-            <div>
-              <h3 className="text-sm font-semibold">{item.name}</h3>
-              <p className="text-xs text-gray-400">{item.desc}</p>
-            </div>
-          </Link>
-        ))}
-      </main>
-
-      <BottomNav activeTab="home" />
-    </div>
+    <MobileContainer>
+      <div className="flex-1 flex flex-col justify-between overflow-y-auto pb-16 -mx-6 px-6">
+        <HeaderNav backUrl="/login" title="Welcome, User" />
+        <div className="flex justify-center my-2">
+          <button className="w-36 h-36 rounded-full border-4 border-gray-300 bg-white flex items-center justify-center shadow-md active:scale-95 hover:border-red-400 transition-all group">
+            <span className="text-2xl font-bold tracking-widest text-gray-700 group-hover:text-red-500">
+              SOS
+            </span>
+          </button>
+        </div>
+        <div className="grid grid-cols-2 gap-3 my-4">
+          <Button variant="outline">Share Location</Button>
+          <Button variant="outline">Quick Call</Button>
+          <Button variant="outline">Nearby Help</Button>
+          <Button variant="outline">Safety Tips</Button>
+        </div>
+        <div className="mt-2">
+          <div className="flex items-center space-x-2 mb-2 cursor-pointer group w-fit">
+            <span className="font-semibold text-gray-800 text-sm">Map</span>
+            <ArrowRight className="w-4 h-4 text-gray-600 group-hover:translate-x-1 transition-transform" />
+          </div>
+          <div className="w-full h-36 bg-slate-200 rounded-2xl relative overflow-hidden border border-gray-200 flex items-center justify-center">
+            <div className="absolute inset-0 opacity-40 bg-[radial-gradient(#94a3b8_1px,transparent_1px)] [background-size:16px_16px]"></div>
+            <div className="absolute w-full h-2 bg-gray-300 rotate-45 top-1/2 -left-4"></div>
+            <div className="absolute w-full h-2 bg-gray-300 -rotate-12 top-1/3"></div>
+            <div className="w-5 h-5 bg-slate-600 rounded-full border-2 border-white shadow-md z-10 animate-pulse"></div>
+          </div>
+        </div>
+      </div>
+      <div className="absolute bottom-4 left-0 right-0 px-4 z-10">
+        <div className="bg-white/90 backdrop-blur-md rounded-full p-2 border border-purple-100 flex items-center justify-around shadow-md">
+          <button className="flex flex-col items-center bg-purple-100 text-purple-900 px-4 py-1.5 rounded-full">
+            <Home className="w-4 h-4" />
+            <span className="text-[10px] font-semibold mt-0.5">Home</span>
+          </button>
+          <button className="flex flex-col items-center text-gray-500 hover:text-purple-600 px-3 py-1.5">
+            <MapPin className="w-4 h-4" />
+            <span className="text-[10px] font-medium mt-0.5">Map</span>
+          </button>
+          <button className="flex flex-col items-center text-gray-500 hover:text-purple-600 px-3 py-1.5">
+            <PhoneCall className="w-4 h-4" />
+            <span className="text-[10px] font-medium mt-0.5">Contacts</span>
+          </button>
+          <button className="flex flex-col items-center text-gray-500 hover:text-purple-600 px-3 py-1.5">
+            <FileText className="w-4 h-4" />
+            <span className="text-[10px] font-medium mt-0.5">Reports</span>
+          </button>
+        </div>
+      </div>
+    </MobileContainer>
   );
 }
