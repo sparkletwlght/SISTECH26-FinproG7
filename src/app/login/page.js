@@ -12,7 +12,6 @@ export default function LoginPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Pindah otomatis ke halaman dashboard saat submit form
     router.push("/dashboard");
   };
 
