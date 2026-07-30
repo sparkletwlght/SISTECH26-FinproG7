@@ -1,12 +1,19 @@
+@import "tailwindcss";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-html,
-body {
-  height: 100%;
+html, body {
   margin: 0;
   padding: 0;
+  height: 100% !important;
+  width: 100% !important;
+  background-color: #ffffff !important;
+}
+
+body.overflow-hidden-page {
+  overflow: hidden !important;
+  height: 100vh !important;
 }
 
 body {

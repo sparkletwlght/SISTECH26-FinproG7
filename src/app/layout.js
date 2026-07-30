@@ -1,4 +1,5 @@
 import './globals.css';
+import 'leaflet/dist/leaflet.css';
 
 export const metadata = {
   title: 'FinPro',
@@ -7,12 +8,8 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="id">
-      <body>
-        <div className="max-w-md mx-auto min-h-screen bg-white shadow-2xl relative flex flex-col">
-          {children}
-        </div>
-      </body>
+    <html lang="en">
+      <body>{children}</body>
     </html>
   );
 }

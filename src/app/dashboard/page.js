@@ -1,7 +1,7 @@
 "use client";
 
 import MobileContainer from "@/components/MobileContainer";
-import HeaderNav from "@/components/HeaderNav";
+import Navbar from "@/components/Navbar";
 import Button from "@/components/Button";
 import Link from "next/link";
 import { ArrowRight, Home, MapPin, PhoneCall, FileText } from "lucide-react";
@@ -10,7 +10,7 @@ export default function DashboardPage() {
   return (
     <MobileContainer>
       <div className="flex-1 flex flex-col justify-between overflow-y-auto pb-16 -mx-6 px-6">
-        <HeaderNav backUrl="/login" title="Welcome, User" />
+        <Navbar />
         
         <div className="flex justify-center my-2">
           <button className="w-36 h-36 rounded-full border-4 border-gray-300 bg-white flex items-center justify-center shadow-md active:scale-95 hover:border-red-400 transition-all group">
