@@ -1,37 +1,4 @@
 import Image from "next/image";
-import Button from "@/components/Button";
-
-const callButtons = [
-  { id: "microphone", icon: "/mail.svg", link: "mailto:email@example.com" },
-  {
-    id: "speaker",
-    icon: "/google.svg",
-    link: "google-mailto:email@example.com",
-  },
-  { id: "phone", icon: "/phone.svg", link: "tel:+1234567890" },
-];
-export function CallButtons() {}
-return (
-  <div className="flex gap-3">
-    {callButtons.map((btn) => (
-      <Button
-        key={btn.id}
-        type="button"
-        variant="primary"
-        className="w-fit rounded-full flex items-center px-3 py-3"
-      >
-        {btn.link ? (
-          <a href={btn.link} target="_blank" rel="noopener noreferrer">
-            <img src={btn.icon} className="w-5 h-5" />
-          </a>
-        ) : (
-          <img src={btn.icon} className="w-5 h-5" />
-        )}
-      </Button>
-    ))}
-  </div>
-);
-
 export default function CallPage() {
   return (
     <section
