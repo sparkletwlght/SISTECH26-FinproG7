@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Bike, Car, Footprints, ArrowUpDown, PanelLeftClose, Moon, Clock } from "lucide-react";
+import { getCoordsFromQuery } from "@/services/geocodingService";
 
 export default function RoutePlannerPanel({
   locations,
@@ -22,18 +23,12 @@ export default function RoutePlannerPanel({
 
   const handleGeocode = async (query, type) => {
     if (!query) return;
-    try {
-      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
-      const data = await res.json();
-      if (data && data.length > 0) {
-        const coords = { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
-        if (type === "start") setStartCoords(coords);
-        if (type === "dest") setDestCoords(coords);
-      } else {
-        alert("Lokasi tidak ditemukan! Coba nama jalan yang lebih spesifik.");
-      }
-    } catch (error) {
-      console.error("Error geocoding:", error);
+    const coords = await getCoordsFromQuery(query);
+    if (coords) {
+      if (type === "start") setStartCoords(coords);
+      if (type === "dest") setDestCoords(coords);
+    } else {
+      alert("Lokasi tidak ditemukan! Coba nama jalan yang lebih spesifik.");
     }
   };
 

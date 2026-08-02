@@ -1,4 +1,6 @@
 "use client";
+import Link from "next/link";
+
 
 import { useState } from "react";
 import { Heart, Download, ShieldCheck, MapPin, Clock, AlertTriangle, FileText, ArrowLeft, ChevronDown, ChevronUp } from "lucide-react";
@@ -84,9 +86,9 @@ export default function LocationPopupCard({ poi, onStart, onBack }) {
         </div>
 
         <div className="flex flex-col gap-1.5 mt-0.5">
-          <button className="w-full py-2 rounded-full bg-[#251838]/30 border border-white/20 text-xs font-semibold text-pink-300 hover:bg-[#35224e]/50 transition-all shadow-sm cursor-pointer">
+          <Link href="/reports" className="w-full py-2 rounded-full bg-[#251838]/30 border border-white/20 text-xs font-semibold text-pink-300 hover:bg-[#35224e]/50 transition-all shadow-sm cursor-pointer flex items-center justify-center text-center">
             + Report this location
-          </button>
+          </Link>
 
           {onBack && (
             <button 

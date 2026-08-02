@@ -1,3 +1,4 @@
+// src/app/map/page.js
 "use client";
 
 import { useState } from "react";
@@ -24,6 +25,17 @@ export default function MapsPage() {
   const [startCoords, setStartCoords] = useState(null);
   const [destCoords, setDestCoords] = useState(null);
   const [isRouteStarted, setIsRouteStarted] = useState(false);
+  
+  // State heatmap ditaruh di dalam fungsi komponen (AMAN)
+  const [showHeatmap, setShowHeatmap] = useState(false);
+
+  // Fungsi untuk menghentikan rute
+  const stopRoute = () => {
+    setIsRouteStarted(false);
+    setStartCoords(null);
+    setDestCoords(null);
+    setShowHeatmap(false); // Matikan heatmap juga saat rute distop
+  };
 
   const SAVED_LOCATIONS = Array.from({ length: 4 }).map((_, i) => ({
     id: `saved-${i}`,
@@ -37,7 +49,12 @@ export default function MapsPage() {
       
       {/* map layer */}
       <div className="absolute inset-0 w-full h-full z-0">
-        <RouteMap startLoc={startCoords} destLoc={destCoords} />
+        <RouteMap 
+          startLoc={startCoords} 
+          destLoc={destCoords} 
+          activeMode={activeMode} 
+          showHeatmap={showHeatmap} 
+        />
       </div>
 
       {/* navbar */}
@@ -80,11 +97,11 @@ export default function MapsPage() {
       {/* ongoing route panel */}
       {isRouteStarted && (
         <div className="absolute z-50 left-6 top-24 pointer-events-auto">
-          <OnGoingRoutePanel onStop={() => {
-            setIsRouteStarted(false);
-            setStartCoords(null);
-            setDestCoords(null);
-          }} />
+          <OnGoingRoutePanel 
+            onStop={stopRoute} 
+            onToggleHeatmap={() => setShowHeatmap(!showHeatmap)} 
+            isHeatmapActive={showHeatmap} 
+          />
         </div>
       )}
 
