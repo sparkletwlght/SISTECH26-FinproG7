@@ -36,7 +36,6 @@ export default function CallPage() {
           <h5 className="text-sm sm:text-base md:text-lg font-normal text-white">
             Quote
           </h5>
-          <CallButtons />
         </div>
       </div>
     </section>
