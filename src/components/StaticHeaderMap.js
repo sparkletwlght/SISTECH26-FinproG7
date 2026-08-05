@@ -6,17 +6,16 @@ import "leaflet/dist/leaflet.css";
 import { startIcon, destinationIcon, poiIcon } from "./markerIcons";
 
 export default function StaticHeaderMap() {
-  // TEORI MUTLAK: Menggunakan state renderKey untuk memaksa siklus hidup baru
   const [renderKey, setRenderKey] = useState("");
 
   useEffect(() => {
-    // ID unik berbasis waktu setiap kali komponen masuk ke client
-    // sistem save reload id bakal brubah
+    // Memberikan key unik saat komponen sukses dimuat di client browser
     setRenderKey(Date.now().toString());
   }, []);
 
-  // return null sebelum key terbentuk, mencegah hidrasi prematur
-  if (!renderKey) return null;
+  if (!renderKey) {
+    return <div style={{ width: "100%", height: "100%", position: "absolute", inset: 0, backgroundColor: "#120b1e" }} />;
+  }
 
   const dummyPOIs = [
     { id: 1, lat: -6.1754, lng: 106.8272, type: "park" },
@@ -26,8 +25,6 @@ export default function StaticHeaderMap() {
 
   return (
     <MapContainer
-      // parameter key memaksa React membangun ulang DOM dari nol
-      // leaflet tidak akan pernah lagi menemukan kontainer undefined
       key={renderKey}
       center={[-6.175392, 106.827153]}
       zoom={15}
