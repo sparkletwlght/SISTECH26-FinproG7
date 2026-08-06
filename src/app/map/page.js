@@ -1,24 +1,25 @@
-// src/app/map/page.js
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import Navbar from "@/components/Navbar";
 import RoutePlannerPanel from "@/components/RoutePlannerPanel";
 import OnGoingRoutePanel from "@/components/OnGoingRoutePanel";
 import { PanelLeftOpen } from "lucide-react";
 import LocationPopupCard from "@/components/LocationPopupCard";
+import { supabase } from "@/services/supabase";
 
 const RouteMap = dynamic(() => import("@/components/RouteMap"), {
   ssr: false,
   loading: () => (
     <div className="flex h-screen w-full items-center justify-center bg-[#120b1e] text-white">
-      <p className="animate-pulse text-sm font-semibold tracking-wider">Memuat Peta Interaktif...</p>
+      <p className="animate-pulse text-sm font-semibold tracking-wider">Load Maps...</p>
     </div>
   ),
 });
 
 export default function MapsPage() {
+  // sesuaikan dengan icon di panel
   const [activeMode, setActiveMode] = useState("bike");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
@@ -26,23 +27,38 @@ export default function MapsPage() {
   const [destCoords, setDestCoords] = useState(null);
   const [isRouteStarted, setIsRouteStarted] = useState(false);
   
-  // State heatmap ditaruh di dalam fungsi komponen (AMAN)
   const [showHeatmap, setShowHeatmap] = useState(false);
+  const [safeRouteInfo, setSafeRouteInfo] = useState(null);
+  const [savedLocations, setSavedLocations] = useState([]);
 
-  // Fungsi untuk menghentikan rute
+  // ambil data lokasi yang disave dari supabase
+  useEffect(() => {
+    async function fetchSavedLocations() {
+      const { data, error } = await supabase
+        .from('saved_locations')
+        .select('*')
+        .order('id', { ascending: false });
+
+      if (!error && data) {
+        setSavedLocations(data);
+      }
+    }
+
+    fetchSavedLocations();
+  }, [startCoords, destCoords]);
+
+  const handleStartRoute = async () => {
+    if (!startCoords || !destCoords) return;
+    setIsRouteStarted(true);
+  };
+
   const stopRoute = () => {
     setIsRouteStarted(false);
     setStartCoords(null);
     setDestCoords(null);
-    setShowHeatmap(false); // Matikan heatmap juga saat rute distop
+    setShowHeatmap(false);
+    setSafeRouteInfo(null);
   };
-
-  const SAVED_LOCATIONS = Array.from({ length: 4 }).map((_, i) => ({
-    id: `saved-${i}`,
-    name: "Saved Location Name",
-    address: "Location Address",
-    eta: "Time estimation",
-  }));
 
   return (
     <main className="relative h-screen w-full overflow-hidden bg-[#120b1e]">
@@ -60,7 +76,7 @@ export default function MapsPage() {
       {/* navbar */}
       <Navbar isSidebarOpen={isSidebarOpen} />
 
-      {/* sidebar */}
+      {/* sidebar route planner */}
       {!isRouteStarted && (
         <div className={`absolute z-40 pointer-events-auto transition-transform duration-300 ease-in-out
           inset-0 w-full h-full border-0 pt-20
@@ -71,10 +87,27 @@ export default function MapsPage() {
           
           <div className="flex flex-col h-full">
             <RoutePlannerPanel
-              locations={SAVED_LOCATIONS}
+              locations={savedLocations}
               activeMode={activeMode}
-              onModeChange={setActiveMode}
-              onSelectLocation={() => {}}
+              onModeChange={(newMode) => {
+                // fungsi ketika icon sepeda/motor/mobil/jalan kaki diklik
+                setActiveMode(newMode);
+              }}
+              destCoords={destCoords}
+              onSelectLocation={(loc) => {
+                const lat = loc.latitude || loc.lat;
+                const lng = loc.longitude || loc.lng;
+                
+                if (lat && lng) {
+                  setDestCoords({
+                    lat: Number(lat),
+                    lng: Number(lng),
+                    name: loc.name,
+                    address: loc.address
+                  });
+                  setIsSidebarOpen(false);
+                }
+              }}
               onCloseSidebar={() => setIsSidebarOpen(false)}
               setStartCoords={setStartCoords}
               setDestCoords={setDestCoords}
@@ -83,21 +116,31 @@ export default function MapsPage() {
         </div>
       )}
 
-      {/* popup detail loc */}
+      {/* popup detail lokasi */}
       {startCoords && destCoords && !isRouteStarted && (
-        <div className="absolute z-50 inset-x-0 bottom-0 md:inset-auto md:right-10 md:top-1/2 md:-translate-y-1/2 pointer-events-auto">
+        <div className="absolute z-50 inset-x-0 bottom-0 w-full flex justify-center pb-4 px-4 md:inset-auto md:right-6 md:top-24 md:w-auto md:pb-0 md:px-0 pointer-events-auto">
           <LocationPopupCard 
-            poi={{ name: "Location Name", safetyPct: 90, lotType: "Lot Type" }}
-            onStart={() => setIsRouteStarted(true)}
-            onBack={() => { setStartCoords(null); setDestCoords(null); }}
+            poi={{ 
+              name: destCoords.name, 
+              destinationName: destCoords.name,
+              address: destCoords.address,
+              lat: destCoords.lat,
+              lng: destCoords.lng,
+              safetyPct: 90, 
+              lotType: activeMode 
+            }}
+            onStart={handleStartRoute} 
+            onBack={() => { setDestCoords(null); setIsSidebarOpen(true); }}
           />
         </div>
       )}
 
       {/* ongoing route panel */}
       {isRouteStarted && (
-        <div className="absolute z-50 left-6 top-24 pointer-events-auto">
+        <div className="absolute z-50 inset-x-0 bottom-0 px-4 pb-4 flex justify-center md:inset-auto md:left-6 md:top-24 md:w-auto md:px-0 md:pb-0 pointer-events-auto">
           <OnGoingRoutePanel 
+            startName={startCoords?.name || "lokasi asal"}
+            destName={destCoords?.name || "lokasi tujuan"}
             onStop={stopRoute} 
             onToggleHeatmap={() => setShowHeatmap(!showHeatmap)} 
             isHeatmapActive={showHeatmap} 
@@ -105,14 +148,14 @@ export default function MapsPage() {
         </div>
       )}
 
-      {/* open close */}
+      {/* open close button */}
       {!isSidebarOpen && !isRouteStarted && (
         <button
           onClick={() => setIsSidebarOpen(true)}
           className="absolute bottom-6 left-6 z-50 p-3.5 rounded-2xl bg-[#1a1128]/90 text-white border border-white/15 shadow-2xl backdrop-blur-md hover:bg-[#2e1f43] transition-all cursor-pointer flex items-center gap-2 pointer-events-auto"
         >
           <PanelLeftOpen size={20} className="text-pink-400" />
-          <span className="text-xs font-semibold">Open Panel</span>
+          <span className="text-xs font-semibold">open panel</span>
         </button>
       )}
 

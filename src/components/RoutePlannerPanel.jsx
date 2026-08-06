@@ -1,3 +1,4 @@
+// src/components/RoutePlannerPanel.jsx
 "use client";
 
 import { useState } from "react";
@@ -22,13 +23,17 @@ export default function RoutePlannerPanel({
   };
 
   const handleGeocode = async (query, type) => {
-    if (!query) return;
+    if (!query.trim()) return;
     const coords = await getCoordsFromQuery(query);
     if (coords) {
-      if (type === "start") setStartCoords(coords);
-      if (type === "dest") setDestCoords(coords);
+      const locationData = { ...coords, name: query };
+      if (type === "start") setStartCoords(locationData);
+      if (type === "dest") setDestCoords(locationData);
     } else {
       alert("Lokasi tidak ditemukan! Coba nama jalan yang lebih spesifik.");
+      // Otomatis kosongkan kolom input jika lokasi tidak ditemukan
+      if (type === "start") setStartLocation("");
+      if (type === "dest") setDestLocation("");
     }
   };
 

@@ -3,7 +3,7 @@
 import { Moon, Clock, ArrowUpDown, X, Phone, AlertTriangle, FileText } from "lucide-react";
 import Link from "next/link"; 
 
-export default function OnGoingRoutePanel({ onStop, isLight = false, isReportPage = false, onToggleHeatmap, isHeatmapActive }) {
+export default function OnGoingRoutePanel({ onStop, isLight = false, isReportPage = false, onToggleHeatmap, isHeatmapActive, startName, destName }) {
   return (
     <div className={`w-full max-w-[345px] md:w-[345px] rounded-t-[28px] md:rounded-[24px] shadow-2xl flex flex-col p-4 font-sans relative transition-all ${
       isLight 
@@ -59,12 +59,12 @@ export default function OnGoingRoutePanel({ onStop, isLight = false, isReportPag
           <div className={`flex items-center rounded-2xl px-3 py-2.5 shadow-inner ${
             isLight ? "bg-gray-50 border border-gray-200" : "bg-[#251838]/80 border border-white/15 backdrop-blur-xl"
           }`}>
-            <span className={`text-xs font-medium truncate ${isLight ? "text-gray-700" : "text-gray-200"}`}>Location name</span>
+            <span className={`text-xs font-medium truncate ${isLight ? "text-gray-700" : "text-gray-200"}`}>{startName || "Location name"}</span>
           </div>
           <div className={`flex items-center rounded-2xl px-3.5 py-2.5 shadow-inner ${
             isLight ? "bg-gray-50 border border-gray-200" : "bg-[#251838]/80 border border-white/15 backdrop-blur-xl"
           }`}>
-            <span className={`text-xs font-medium truncate ${isLight ? "text-gray-700" : "text-gray-200"}`}>Location name</span>
+            <span className={`text-xs font-medium truncate ${isLight ? "text-gray-700" : "text-gray-200"}`}>{destName || "Location name"}</span>
           </div>
         </div>
 
@@ -87,14 +87,14 @@ export default function OnGoingRoutePanel({ onStop, isLight = false, isReportPag
 
           <div className="flex flex-col gap-2">
             <div className="grid grid-cols-2 gap-2">
-              <button className={`py-2.5 px-2 rounded-full border text-xs font-semibold transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer ${
+              <Link href="/contacts" className={`py-2.5 px-2 rounded-full border text-xs font-semibold transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer ${
                 isLight 
                   ? "bg-gray-50 border-gray-200 text-pink-600 hover:bg-pink-50" 
                   : "bg-[#251838]/40 border-white/15 text-pink-300 hover:bg-[#35224e]/60"
               }`}>
                 <Phone size={12} />
                 Quick Call
-              </button>
+              </Link>
 
               {/* heatmap risk button + active state */}
               <button 

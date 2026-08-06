@@ -153,7 +153,7 @@ export default function ReportsPage() {
           )}
         </div>
 
-        <div className="flex flex-col items-center gap-4 py-10">
+        <div className="flex flex-col items-center pb-20 gap-4 py-10">
           {visibleCount < filteredReports.length && (
             <button 
               onClick={handleLoadMore}
@@ -161,11 +161,14 @@ export default function ReportsPage() {
               load more
             </button>
           )}
+        </div>
 
+        {/* new report melayang */}
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-auto">
           <Link
             href="/anonymous"
-            className="px-8 py-3.5 rounded-full text-white font-semibold text-base bg-pink-500 shadow-lg shadow-pink-500/30 hover:bg-pink-600 hover:shadow-pink-500/50 transition-all text-center">
-            new report
+            className="px-8 py-3 rounded-full text-white font-semibold text-sm bg-pink-500 shadow-lg shadow-pink-500/30 hover:bg-pink-600 hover:shadow-pink-500/50 transition-all text-center flex items-center justify-center">
+            New Report
           </Link>
         </div>
 

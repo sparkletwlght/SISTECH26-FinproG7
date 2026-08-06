@@ -24,7 +24,7 @@ export const fetchRouteData = async (start, dest, mode) => {
 };
 
 export const getRiskHeatmapData = () => {
-  // contoh titik rawan (nanti pindah ke data)
+  // contoh titik rawan 
   return [
     { id: 1, lat: -6.1754, lng: 106.8272, intensity: "high", radius: 400 },
     { id: 2, lat: -6.1822, lng: 106.8340, intensity: "medium", radius: 300 },
@@ -86,5 +86,19 @@ export const fetchPOIsData = async (lat, lng, fallbackPOIs) => {
     return fallbackPOIs;
   } catch (error) {
     return fallbackPOIs;
+  }
+};
+
+export const fetchHeatmapData = async (datetime) => {
+  try {
+    const response = await fetch(`http://localhost:8000/heatmap?datetime=${datetime}`);
+    if (!response.ok) {
+      throw new Error("Gagal mengambil data heatmap");
+    }
+    const data = await response.json();
+    return data.points || [];
+  } catch (error) {
+    console.error("Error fetching heatmap:", error);
+    return [];
   }
 };

@@ -1,71 +1,87 @@
-// src/components/RouteMap.jsx
 "use client";
 
 import { useState, useEffect } from "react";
+import { fetchRouteData, fetchPOIsData } from "@/services/mapService";
+import { getHeatmap } from "@/services/api";
 import {
   MapContainer,
   TileLayer,
   Marker,
   Polyline,
-  Circle, // <-- Import Circle dari react-leaflet buat bikin heatmap instan
+  CircleMarker,
   useMap,
 } from "react-leaflet";
 
 import "leaflet/dist/leaflet.css";
 import { startIcon, destinationIcon, poiIcon } from "./markerIcons";
-import { fetchRouteData, fetchPOIsData, getRiskHeatmapData } from "@/services/mapService";
 
 function MapRecenter({ coords, centerCoords }) {
   const map = useMap();
   useEffect(() => {
+    if (!map) return;
     if (coords && coords.length > 0) {
       map.fitBounds(coords, { padding: [50, 50] });
-    } else if (centerCoords) {
-      map.setView([centerCoords.lat, centerCoords.lng], 15);
+    } else if (centerCoords?.lat && centerCoords?.lng) {
+      map.setView([centerCoords.lat, centerCoords.lng], 13);
     }
   }, [coords, centerCoords, map]);
   return null;
 }
 
 const FALLBACK_POIS = [
-  { id: 1, lat: -6.1754, lng: 106.8272, type: "park", name: "Monas Park" },
-  { id: 2, lat: -6.1822, lng: 106.8340, type: "cafe", name: "Kopi Kenangan Gambir" },
-  { id: 3, lat: -6.1711, lng: 106.8220, type: "shop", name: "Indomaret Juanda" },
-  { id: 4, lat: -6.1850, lng: 106.8225, type: "restaurant", name: "Restoran Padang Sederhana" },
+  { id: 1, lat: 41.8781, lng: -87.6298, type: "park", name: "Chicago Park" },
 ];
 
 export default function RouteMap({ startLoc, destLoc, activeMode, showHeatmap = false }) {
   const [isMounted, setIsMounted] = useState(false);
   const [routeLine, setRouteLine] = useState([]);
   const [dynamicPOIs, setDynamicPOIs] = useState([]);
-  const [heatmapPoints, setHeatmapPoints] = useState([]);
+  const [riskPoints, setRiskPoints] = useState([]);
 
+  // render map hanya berjalan di sisi client browser
   useEffect(() => {
     setIsMounted(true);
-    setHeatmapPoints(getRiskHeatmapData()); // Ambil data titik risiko
   }, []);
 
-  const defaultCenter = { lat: -6.175392, lng: 106.827153 };
-  const currentCenter = startLoc || defaultCenter;
+  useEffect(() => {
+    if (!isMounted || !showHeatmap) {
+      setRiskPoints([]);
+      return;
+    }
+
+    getHeatmap(new Date().toISOString()).then((points) => {
+      setRiskPoints(points || []);
+    }).catch(() => setRiskPoints([]));
+  }, [isMounted, showHeatmap]);
+
+  const defaultCenter = { lat: 41.8781, lng: -87.6298 };
+  const currentCenter = destLoc?.lat && destLoc?.lng 
+    ? destLoc 
+    : (startLoc?.lat && startLoc?.lng ? startLoc : defaultCenter);
 
   useEffect(() => {
     if (!isMounted) return;
 
     fetchPOIsData(currentCenter.lat, currentCenter.lng, FALLBACK_POIS).then((pois) => {
-      setDynamicPOIs(pois);
-    });
+      setDynamicPOIs(pois || []);
+    }).catch(() => setDynamicPOIs(FALLBACK_POIS));
 
-    if (startLoc && destLoc) {
+    if (startLoc?.lat && destLoc?.lat) {
       fetchRouteData(startLoc, destLoc, activeMode).then((coords) => {
-        setRouteLine(coords);
-      });
+        setRouteLine(coords || []);
+      }).catch(() => setRouteLine([]));
     } else {
       setRouteLine([]);
     }
   }, [isMounted, startLoc, destLoc, activeMode]);
 
+  // render Leaflet dicegah sebelum komponen benar-benar ter-mount di browser
   if (!isMounted) {
-    return <div className="w-full h-full bg-[#120b1e]" />;
+    return (
+      <div className="flex h-full w-full items-center justify-center bg-[#120b1e] text-pink-400 text-xs tracking-widest animate-pulse">
+        LOAD MAPS...
+      </div>
+    );
   }
 
   return (
@@ -89,7 +105,7 @@ export default function RouteMap({ startLoc, destLoc, activeMode, showHeatmap = 
       
       <MapContainer
         center={[currentCenter.lat, currentCenter.lng]}
-        zoom={15}
+        zoom={13}
         zoomControl={false}
         style={{ width: "100%", height: "100%" }}
       >
@@ -99,20 +115,30 @@ export default function RouteMap({ startLoc, destLoc, activeMode, showHeatmap = 
           className="map-custom-glow"
         />
 
-        {/* render heatmap waktu di klik buttonnya */}
-        {showHeatmap && heatmapPoints.map((point) => (
-          <Circle
-            key={`heat-${point.id}`}
-            center={[point.lat, point.lng]}
-            radius={point.radius}
-            pathOptions={{
-              color: point.intensity === "high" ? "#ff0055" : "#ff9900",
-              fillColor: point.intensity === "high" ? "#ff0055" : "#ff9900",
-              fillOpacity: 0.4,
-              weight: 1,
-            }}
-          />
-        ))}
+        {showHeatmap && riskPoints.map((p, index) => {
+          const score = p.risk_score !== undefined ? Number(p.risk_score) : 0.5;
+
+          let color = "#22c55e"; 
+          if (score >= 0.7) {
+            color = "#ef4444";   
+          } else if (score >= 0.4) {
+            color = "#eab308";   
+          }
+
+          return (
+            <CircleMarker
+              key={`risk-point-${index}`}
+              center={[Number(p.lat), Number(p.lon)]}
+              radius={10}
+              pathOptions={{
+                color: color,
+                fillColor: color,
+                fillOpacity: 0.75,
+                weight: 1,
+              }}
+            />
+          );
+        })}
 
         {routeLine.length > 0 && (
           <Polyline
@@ -129,8 +155,12 @@ export default function RouteMap({ startLoc, destLoc, activeMode, showHeatmap = 
           <Marker key={poi.id} position={[poi.lat, poi.lng]} icon={poiIcon(poi.type)} />
         ))}
 
-        {startLoc && <Marker position={[startLoc.lat, startLoc.lng]} icon={startIcon} />}
-        {destLoc && <Marker position={[destLoc.lat, destLoc.lng]} icon={destinationIcon} />}
+        {startLoc?.lat && startLoc?.lng && (
+          <Marker position={[Number(startLoc.lat), Number(startLoc.lng)]} icon={startIcon(startLoc.name)} />
+        )}
+        {destLoc?.lat && destLoc?.lng && (
+          <Marker position={[Number(destLoc.lat), Number(destLoc.lng)]} icon={destinationIcon(destLoc.name)} />
+        )}
 
         <MapRecenter coords={routeLine} centerCoords={currentCenter} />
       </MapContainer>
