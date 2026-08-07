@@ -1,4 +1,3 @@
-// app/anonymous/page.jsx
 'use client';
 
 import { useState, useEffect, useRef } from "react"; 
@@ -7,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import ConfirmReport from "@/components/ConfirmReport";
 import SuccessReport from "@/components/SuccessReport";
 import { supabase } from "@/services/supabase";
+import Footer from "@/components/Footer";
 
 export default function AnonymousReportPage() {
   const [formData, setFormData] = useState({
@@ -22,16 +22,16 @@ export default function AnonymousReportPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [locations, setLocations] = useState([]);
   
-  // State untuk modal
+  // state untuk modal
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
 
-  // Fitur custom searchable dropdown location
+  // fitur custom searchable dropdown location
   const [isLocationOpen, setIsLocationOpen] = useState(false);
   const [locationSearch, setLocationSearch] = useState("");
   const locationRef = useRef(null);
 
-  // Tutup dropdown kalau user klik di luar area kotak location
+  // tutup dropdown kalau user klik di luar area kotak location
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (locationRef.current && !locationRef.current.contains(event.target)) {
@@ -42,7 +42,7 @@ export default function AnonymousReportPage() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Dummy data lokasi dropdown
+  // dummy data lokasi dropdown
   useEffect(() => {
     setLocations([
       { name: "Lobby Utama" },
@@ -61,13 +61,13 @@ export default function AnonymousReportPage() {
       const selectedFiles = Array.from(e.target.files);
       setFiles(selectedFiles);
       
-      // Buat array URL untuk preview gambar secara real-time
+      // array URL untuk preview gambar secara real-time
       const urls = selectedFiles.map(file => URL.createObjectURL(file));
       setPreviewUrls(urls);
     }
   };
 
-  // Step 1: Buka popup konfirmasi dulu pas tombol submit ditekan
+  // popup konfirmasi dulu pas tombol submit ditekan
   const handleOpenConfirm = (e) => {
     e.preventDefault();
     if (!formData.title || !formData.location) {
@@ -77,18 +77,18 @@ export default function AnonymousReportPage() {
     setIsConfirmOpen(true);
   };
 
-  // Step 2: Eksekusi POST ke Supabase setelah dikonfirmasi di dalam popup
+  // eksekusi POST ke Supabase setelah dikonfirmasi di dalam popup
   const handleConfirmedSubmit = async () => {
     setIsLoading(true);
     setIsConfirmOpen(false);
 
     try {
-      // Menyimpan data ke Supabase dengan id unik (Date.now()) dan kolom 'images' berupa array
+      // simpan data ke Supabase dengan id unik (Date.now()) dan kolom 'images' berupa array
       const { error } = await supabase
         .from("reports")
         .insert([
           {
-            id: Date.now(), // Mencegah error duplicate key value
+            id: Date.now(), // cegah error duplicate key value
             title: formData.title,
             location: formData.location,
             address: formData.location, 
@@ -117,7 +117,7 @@ export default function AnonymousReportPage() {
 
       <div className="pt-28 sm:pt-32 max-w-5xl mx-auto w-full pb-20 px-4 sm:px-8">
         
-        {/* Header */}
+        {/* header */}
         <div className="mb-10 border-b border-gray-100 pb-6">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
             Anonymous Report
@@ -127,18 +127,18 @@ export default function AnonymousReportPage() {
           </p>
         </div>
 
-        {/* Main Form */}
+        {/* main form */}
         <form onSubmit={handleOpenConfirm} className="flex flex-col gap-8 w-full">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full">
             
-            {/* Title */}
+            {/* title */}
             <div className="flex flex-col gap-2">
               <label className="text-sm font-semibold text-gray-800">Title</label>
               <input type="text" name="title" value={formData.title} onChange={handleChange} placeholder="Input"
                 className="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400/50 transition-all placeholder-gray-400 bg-white" />
             </div>
 
-            {/* Location */}
+            {/* location */}
             <div className="flex flex-col gap-2 relative" ref={locationRef}>
               <label className="text-sm font-semibold text-gray-800">Location</label>
               
@@ -202,14 +202,14 @@ export default function AnonymousReportPage() {
             </div>
           </div>
 
-          {/* Report Description */}
+          {/* report description */}
           <div className="flex flex-col gap-2 w-full border-t border-gray-100 pt-6">
             <label className="text-sm font-semibold text-gray-800">Report Description</label>
             <textarea name="description" rows={5} value={formData.description} onChange={handleChange} placeholder="Input description of the incident..."
               className="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400/50 transition-all placeholder-gray-400 resize-none bg-white" />
           </div>
 
-          {/* Report Severity */}
+          {/* report severity */}
           <div className="flex flex-col gap-4 w-full border-t border-gray-100 pt-6">
             <label className="text-sm font-semibold text-gray-800">Report Severity</label>
             <div className="flex flex-wrap items-center gap-6 sm:gap-8 text-sm font-medium text-gray-700">
@@ -228,7 +228,7 @@ export default function AnonymousReportPage() {
             </div>
           </div>
 
-          {/* Report Evidence */}
+          {/* report evidence */}
           <div className="flex flex-col gap-2 w-full border-t border-gray-100 pt-6">
             <label className="text-sm font-semibold text-gray-800">Report Evidence</label>
             <div className="relative border-2 border-dashed border-gray-200 rounded-xl py-12 text-center hover:border-pink-300 transition-colors bg-white group w-full">
@@ -249,7 +249,7 @@ export default function AnonymousReportPage() {
             </div>          
           </div>
 
-          {/* Live Preview */}
+          {/* live preview */}
           <div className="flex flex-col gap-6 w-full border-t border-gray-200 pt-8 mt-4">
             <h2 className="text-xl font-bold text-pink-500">Preview</h2>
             
@@ -298,7 +298,7 @@ export default function AnonymousReportPage() {
                   </div>
                 </div>
                 
-                {/* Photo Preview Grid */}
+                {/* photo preview grid */}
                 <div className="grid grid-cols-3 sm:flex sm:flex-row gap-2 sm:gap-4 pt-2">
                   <div className="aspect-video sm:w-32 sm:h-24 border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden flex items-center justify-center">
                     {previewUrls[0] ? <img src={previewUrls[0]} alt="Evidence 1" className="w-full h-full object-cover" /> : null}
@@ -318,7 +318,7 @@ export default function AnonymousReportPage() {
             </div>
           </div>
 
-          {/* Submit Button */}
+          {/* submit button */}
           <div className="w-full flex justify-center pt-8 pb-10">
             <button type="submit" disabled={isLoading}
               className="w-full sm:w-auto bg-gradient-to-r from-pink-400 to-pink-500 hover:from-pink-500 hover:to-pink-600 text-white px-8 py-3.5 rounded-full font-semibold text-sm transition-all flex items-center justify-center gap-2 shadow-sm disabled:opacity-70 cursor-pointer">
@@ -330,7 +330,7 @@ export default function AnonymousReportPage() {
 
       </div>
 
-      {/* Confirm submit */}
+      {/* confirm submit */}
       <ConfirmReport
         isOpen={isConfirmOpen}
         onClose={() => setIsConfirmOpen(false)}
@@ -351,7 +351,7 @@ export default function AnonymousReportPage() {
         }}
         formData={formData}
       />
-
+    <Footer />
     </div>
   );
 }

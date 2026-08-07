@@ -7,6 +7,7 @@ import MapBackground from "@/components/MapBackground";
 import OngoingRoutePopup from "@/components/OngoingRoutePopup";
 import ReportItem from "@/components/ReportItem";
 import { supabase } from "@/services/supabase";
+import Footer from "@/components/Footer";
 
 export default function ReportsPage() {
   const [reportList, setReportList] = useState([]);
@@ -173,6 +174,9 @@ export default function ReportsPage() {
         </div>
 
       </div>
+      <div className="relative z-20 mt-12">
+         <Footer />
+       </div>
     </MapBackground>
   );
 }
