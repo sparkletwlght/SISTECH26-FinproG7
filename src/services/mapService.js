@@ -95,7 +95,7 @@ export const fetchHeatmapData = async (datetime) => {
   try {
     // Menggunakan variabel environment untuk URL backend production, 
     // fallback ke string kosong atau domain backend kalian yang sebenarnya.
-    const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || import.meta.env?.VITE_BACKEND_URL || "https://URL_BACKEND_ONLINE_KALIAN.com";
+    const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || import.meta.env?.VITE_BACKEND_URL || "https://apimlopsfinpro7.neoartd.my.id/";
     
     const response = await fetch(`${BACKEND_URL}/heatmap?datetime=${datetime}`);
     if (!response.ok) {
