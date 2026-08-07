@@ -24,7 +24,6 @@ export const fetchRouteData = async (start, dest, mode) => {
 };
 
 export const getRiskHeatmapData = () => {
-  // contoh titik rawan 
   return [
     { id: 1, lat: -6.1754, lng: 106.8272, intensity: "high", radius: 400 },
     { id: 2, lat: -6.1822, lng: 106.8340, intensity: "medium", radius: 300 },
@@ -46,6 +45,9 @@ export const fetchPOIsData = async (lat, lng, fallbackPOIs) => {
       );
       out body;
     `;
+    
+    // Ganti URL ini dengan endpoint proxy backend kalian jika sudah dibuat, 
+    // atau gunakan URL publik jika diizinkan.
     const url = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(overpassQuery)}`;
     const res = await fetch(url);
     const textResponse = await res.text();
@@ -91,7 +93,11 @@ export const fetchPOIsData = async (lat, lng, fallbackPOIs) => {
 
 export const fetchHeatmapData = async (datetime) => {
   try {
-    const response = await fetch(`http://localhost:8000/heatmap?datetime=${datetime}`);
+    // Menggunakan variabel environment untuk URL backend production, 
+    // fallback ke string kosong atau domain backend kalian yang sebenarnya.
+    const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || import.meta.env?.VITE_BACKEND_URL || "https://URL_BACKEND_ONLINE_KALIAN.com";
+    
+    const response = await fetch(`${BACKEND_URL}/heatmap?datetime=${datetime}`);
     if (!response.ok) {
       throw new Error("Gagal mengambil data heatmap");
     }
