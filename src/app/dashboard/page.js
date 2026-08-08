@@ -1,6 +1,11 @@
 'use client';
 
+<<<<<<< Updated upstream
 import { useState, useEffect } from "react";
+=======
+import Navbar from "@/components/Navbar";
+import Button from "@/components/Button";
+>>>>>>> Stashed changes
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import MapBackground from "@/components/MapBackground";

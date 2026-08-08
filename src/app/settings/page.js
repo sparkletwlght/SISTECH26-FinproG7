@@ -1,23 +1,51 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import InputField from "@/components/InputField";
-import Button from "@/components/Button";
 import Image from "next/image";
-import { User, Lock, Mail, Home, Phone, Check, Calendar } from "lucide-react";
+
+const settingsMenu = [
+  { title: "Account", icon: "/user.svg", route: "/settings/account" },
+  {
+    title: "Notifications",
+    icon: "/ringtone.svg",
+    route: "/settings/notifications",
+  },
+  {
+    title: "Privacy & Security",
+    icon: "/lock.svg",
+    route: "/settings/privacy",
+  },
+  {
+    title: "Appearance",
+    icon: "/photo.svg",
+    route: "/settings/appearance",
+  },
+  {
+    title: "My History",
+    icon: "/history.svg",
+    route: "/settings/history",
+  },
+  {
+    title: "Languages",
+    icon: "/languages.svg",
+    route: "/settings/languages",
+  },
+  { title: "Help & Support", icon: "/help.svg", route: "/settings/help" },
+  {
+    title: "Log Out",
+    icon: "/logout.svg",
+    route: "/login",
+    isDanger: true,
+  },
+];
 
 export default function SettingsPage() {
   const router = useRouter();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    router.push("/dashboard");
-  };
-
   return (
     <section
       id="splashpage"
-      className="relative w-full min-h-dvh flex flex-col items-center justify-center overflow-hidden px-4 sm:px-6 md:px-12 py-8 bg-black"
+      className="relative w-full min-h-dvh flex flex-col items-center justify-center overflow-hidden px-4 sm:px-6 md:px-12 py-10 bg-black"
     >
       <Image
         fill
@@ -27,41 +55,54 @@ export default function SettingsPage() {
         sizes="100vw"
         className="object-cover object-center pointer-events-none z-0"
       />
-      <div className="relative z-10 flex flex-col items-center w-full mx-auto">
-        <h4 className="text-xl sm:text-2xl md:text-3xl font-bold text-white tracking-wide text-center">
+      <div className="relative z-10 flex flex-col items-center w-full max-w-2xl mx-auto">
+        <div className="w-full flex items-center justify-between text-white/80 mb-6 px-2">
+          <button
+            onClick={() => router.back()}
+            className="p-2 hover:text-white transition-colors"
+            aria-label="Go back"
+          >
+            <span className="text-2xl">←</span>
+          </button>
+          <button
+            className="p-2 hover:text-white transition-colors"
+            aria-label="More options"
+          >
+            <span className="text-xl">⋮</span>
+          </button>
+        </div>
+        <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-wide text-center">
           Settings
-        </h4>
-        <p className="text-white text-center text-sm md:text-base mt-2">
+        </h1>
+        <p className="text-white/80 text-center text-sm sm:text-base mt-2 mb-8 max-w-md">
           Manage your personal profile, notification preferences, and app
           settings.
         </p>
-        <div className="w-full flex flex-col justify-between py-6 gap-6 max-w-3xl">
-          <div className="max-w-3xl flex flex-col gap-3">
-            <Button type="button" variant="outline" className="items-start">
-              Account
-            </Button>
-            <Button type="button" variant="outline">
-              Notifications
-            </Button>
-            <Button type="button" variant="outline">
-              Privacy & Security
-            </Button>
-            <Button type="button" variant="outline">
-              Appearance
-            </Button>
-            <Button type="button" variant="outline">
-              My History
-            </Button>
-            <Button type="button" variant="outline">
-              Languages
-            </Button>
-            <Button type="button" variant="outline">
-              Help & Support
-            </Button>
-            <Button type="button" variant="outline">
-              Log Out
-            </Button>
-          </div>
+        <div className="w-full flex flex-col gap-3">
+          {settingsMenu.map((item, index) => (
+            <button
+              key={index}
+              type="button"
+              onClick={() => router.push(item.route)}
+              className="w-full flex items-center gap-3.5 px-5 py-3.5 bg-white/80 hover:bg-white/95 backdrop-blur-md rounded-2xl text-left transition-all duration-200 shadow-sm"
+            >
+              <div className="relative w-5 h-5 flex-shrink-0">
+                <Image
+                  src={item.icon}
+                  alt={item.title}
+                  fill
+                  className="object-contain"
+                />
+              </div>
+              <span
+                className={`text-sm sm:text-base font-semibold ${
+                  item.isDanger ? "text-red-500" : "text-gray-800"
+                }`}
+              >
+                {item.title}
+              </span>
+            </button>
+          ))}
         </div>
       </div>
     </section>

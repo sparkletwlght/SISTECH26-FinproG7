@@ -11,11 +11,9 @@ export function SocialLoginGroup() {
     switch (providerId) {
       case "google":
         console.log("Proses Login Google...");
-        // signIn("google"); // jika memakai NextAuth
         break;
       case "apple":
         console.log("Proses Login Apple...");
-        // signIn("apple");
         break;
       case "mail":
         console.log("Proses Login Email / Magic Link...");
